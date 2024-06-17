@@ -1,4 +1,5 @@
 [POL]  Są to programy, stworzone w Node-RED służący do wizualizacji danych z czujników Ela Innovation odbieranych przez MQTT.
+ 
   -> temperatura - program dla czujnika Blue PUCK T EN12830, wyświetla wartości, takie jak nazwa czujnika, aktualna temperatura, sygnał RSSI oraz status połączenia z brokeram na prostej aplikacji dashboard. Wykorzystuje widgety takie jak tekst, wykres, miernik oraz wskaźnik LED do przedstawienia danych w czasie rzeczywistym.
 
   -> ruch i drgania - program dla czujnika Blue PUCK MOV, przyjmuje dane w obu trybach czujnika: MOV (stan ruchu oraz ilość poruszeń) i ANG (ruch w przestrzeni trójwymiarowej).
