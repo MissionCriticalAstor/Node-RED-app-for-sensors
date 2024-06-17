@@ -1,0 +1,883 @@
+[
+    {
+        "id": "08e31230dd344cad",
+        "type": "tab",
+        "label": "Aplikacja dla czujnika ruch i drgań",
+        "disabled": false,
+        "info": "",
+        "env": []
+    },
+    {
+        "id": "292eaf2437f6e9d2",
+        "type": "mqtt in",
+        "z": "08e31230dd344cad",
+        "name": "",
+        "topic": "AMC/test",
+        "qos": "2",
+        "datatype": "auto-detect",
+        "broker": "038eb83fd0c55fe9",
+        "nl": false,
+        "rap": true,
+        "rh": 0,
+        "inputs": 0,
+        "x": 100,
+        "y": 260,
+        "wires": [
+            [
+                "049e60cc23d6a541",
+                "eb9724aeb4205200",
+                "3a968289fe4e5d81",
+                "eff70016bc9b5844",
+                "048725a52523a8a7",
+                "73dfcd4b6004c473",
+                "1dae2b8df28a8391",
+                "b198b4d129898a81",
+                "908225545151e993",
+                "8c5a78f41fa01d56"
+            ]
+        ],
+        "info": "Odbiera wiadomości z tematu 'AMC/test' na serwerze MQTT.\nReceives messages from the topic 'AMC/test' on the MQTT server."
+    },
+    {
+        "id": "049e60cc23d6a541",
+        "type": "function",
+        "z": "08e31230dd344cad",
+        "name": "rssiMOV",
+        "func": "if(msg.payload.action === \"data.scan\"){\n    if (msg.payload.data[0].deviceMac === \"ED:7D:BB:AF:59:B2\"){\n        msg.payload = msg.payload.data[0].rssi;\n    } else {\n        return;\n    }    \n} else {\n    return;\n}\nreturn msg;",
+        "outputs": 1,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 420,
+        "y": 200,
+        "wires": [
+            [
+                "4887b9e8f4a47b2c"
+            ]
+        ],
+        "info": "Przetwarza wiadomości, aby wyodrębnić wartość RSSI.\nProcesses messages to extract the RSSI value."
+    },
+    {
+        "id": "eb9724aeb4205200",
+        "type": "function",
+        "z": "08e31230dd344cad",
+        "name": "Ilość poruszeń i drgań",
+        "func": "if(msg.payload.action === \"data.scan\"){\n    if (msg.payload.data[0].deviceMac === \"ED:7D:BB:AF:59:B2\"){\n        msg.payload = msg.payload.data[0].charValues.alertLevel.counter;\n    } else {\n        return;\n    }    \n} else {\n    return;\n}\nmsg.topic = \"ilość poruszeń i drgań\";\nreturn msg;",
+        "outputs": 1,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 460,
+        "y": 240,
+        "wires": [
+            [
+                "47bacb4b5e08c7bc"
+            ]
+        ],
+        "info": "Przetwarza wiadomości, aby wyodrębnić ilość poruszeń i drgań.\nProcesses messages to extract the motion and vibration count."
+    },
+    {
+        "id": "1603c6b9401ff021",
+        "type": "ui_text",
+        "z": "08e31230dd344cad",
+        "group": "a97883d12d358ba6",
+        "order": 1,
+        "width": 6,
+        "height": 1,
+        "name": "",
+        "label": "Nazwa czujnika:",
+        "format": "{{msg.payload}}",
+        "layout": "row-left",
+        "className": "",
+        "style": true,
+        "font": "",
+        "fontSize": "20",
+        "color": "#000000",
+        "x": 860,
+        "y": 160,
+        "wires": [],
+        "info": "Wyświetla nazwę czujnika.\nDisplays the sensor name."
+    },
+    {
+        "id": "3a968289fe4e5d81",
+        "type": "debug",
+        "z": "08e31230dd344cad",
+        "name": "debug 30",
+        "active": false,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "payload",
+        "targetType": "msg",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 120,
+        "y": 340,
+        "wires": [],
+        "info": "Służy do debugowania wiadomości.\nUsed for debugging messages."
+    },
+    {
+        "id": "fb3bfa6efa082172",
+        "type": "status",
+        "z": "08e31230dd344cad",
+        "name": "",
+        "scope": [
+            "292eaf2437f6e9d2"
+        ],
+        "x": 120,
+        "y": 620,
+        "wires": [
+            [
+                "8142dd501e2b3c6a"
+            ]
+        ],
+        "info": "Monitoruje status połączenia MQTT.\nMonitors the MQTT connection status."
+    },
+    {
+        "id": "8142dd501e2b3c6a",
+        "type": "function",
+        "z": "08e31230dd344cad",
+        "name": "status mqtt",
+        "func": "if(msg.status.fill === \"green\") {\n    msg.payload = 2;\n} else if (msg.status.fill === \"yellow\") {\n    msg.payload = 1;\n} else if (msg.status.fill === \"red\") {\n    msg.payload = 0;\n}\nreturn msg;",
+        "outputs": 1,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 430,
+        "y": 620,
+        "wires": [
+            [
+                "dbc2402c3c2f9d35",
+                "5d3d546fa6e69f2a"
+            ]
+        ],
+        "info": "Tłumaczy status połączenia MQTT na wartość numeryczną.\nTranslates the MQTT connection status into a numerical value."
+    },
+    {
+        "id": "dbc2402c3c2f9d35",
+        "type": "ui_led",
+        "z": "08e31230dd344cad",
+        "order": 4,
+        "group": "a97883d12d358ba6",
+        "width": 3,
+        "height": 1,
+        "label": "MQTT",
+        "labelPlacement": "left",
+        "labelAlignment": "left",
+        "colorForValue": [
+            {
+                "color": "#ff0000",
+                "value": "0",
+                "valueType": "num"
+            },
+            {
+                "color": "#ffff00",
+                "value": "1",
+                "valueType": "num"
+            },
+            {
+                "color": "#008000",
+                "value": "2",
+                "valueType": "num"
+            }
+        ],
+        "allowColorForValueInMessage": false,
+        "shape": "circle",
+        "showGlow": true,
+        "name": "",
+        "x": 830,
+        "y": 620,
+        "wires": [],
+        "info": "Wskaźnik LED wyświetlający status połączenia MQTT.\nLED indicator displaying the MQTT connection status."
+    },
+    {
+        "id": "54b0dd7b2e065a34",
+        "type": "ui_text",
+        "z": "08e31230dd344cad",
+        "group": "1d760889a8635587",
+        "order": 1,
+        "width": 8,
+        "height": 3,
+        "name": "",
+        "label": "Nazwa czujnika:",
+        "format": "{{msg.payload}}",
+        "layout": "row-left",
+        "className": "",
+        "style": true,
+        "font": "Lucida Sans Unicode,Lucida Grande,sans-serif",
+        "fontSize": "20",
+        "color": "#000000",
+        "x": 860,
+        "y": 360,
+        "wires": [],
+        "info": "Wyświetla nazwę czujnika.\nDisplays the sensor name."
+    },
+    {
+        "id": "47bacb4b5e08c7bc",
+        "type": "ui_chart",
+        "z": "08e31230dd344cad",
+        "name": "wykres ilości poruszeń i drgań",
+        "group": "a97883d12d358ba6",
+        "order": 9,
+        "width": 20,
+        "height": 8,
+        "label": "",
+        "chartType": "line",
+        "legend": "true",
+        "xformat": "HH:mm:ss",
+        "interpolate": "linear",
+        "nodata": "",
+        "dot": false,
+        "ymin": "",
+        "ymax": "",
+        "removeOlder": 1,
+        "removeOlderPoints": "",
+        "removeOlderUnit": "3600",
+        "cutout": 0,
+        "useOneColor": false,
+        "useUTC": false,
+        "colors": [
+            "#1f77b4",
+            "#aec7e8",
+            "#ff7f0e",
+            "#2ca02c",
+            "#98df8a",
+            "#d62728",
+            "#ff9896",
+            "#9467bd",
+            "#c5b0d5"
+        ],
+        "outputs": 1,
+        "useDifferentColor": false,
+        "className": "",
+        "x": 910,
+        "y": 240,
+        "wires": [
+            []
+        ],
+        "info": "Rysuje wykres ilości poruszeń i drgań w czasie.\nDraws a motion and vibration count chart over time."
+    },
+    {
+        "id": "4887b9e8f4a47b2c",
+        "type": "ui_gauge",
+        "z": "08e31230dd344cad",
+        "name": "",
+        "group": "a97883d12d358ba6",
+        "order": 3,
+        "width": 6,
+        "height": 3,
+        "gtype": "donut",
+        "title": "rssi",
+        "label": "dBm",
+        "format": "{{value}}",
+        "min": "-100",
+        "max": "0",
+        "colors": [
+            "#ff0000",
+            "#e6e600",
+            "#008000"
+        ],
+        "seg1": "-80",
+        "seg2": "-60",
+        "diff": false,
+        "className": "",
+        "x": 830,
+        "y": 200,
+        "wires": [],
+        "info": "Wyświetla wartość RSSI jako miernik.\nDisplays the RSSI value as a gauge."
+    },
+    {
+        "id": "d48d3559361f0671",
+        "type": "comment",
+        "z": "08e31230dd344cad",
+        "name": "Odbieranie wiadomości",
+        "info": "**MQTT In Node**:\n[POL]   Odbieranie wiadomości z tematu AMC/test na serwerze MQTT\n[ENG]   Receives messages from the topic 'AMC/test' on the MQTT server.",
+        "x": 140,
+        "y": 200,
+        "wires": []
+    },
+    {
+        "id": "fc1cd69c2295d726",
+        "type": "comment",
+        "z": "08e31230dd344cad",
+        "name": "Przetwarzanie wiadomości MOV",
+        "info": "**Function Node 'Nazwa czujnika MOV'**:\n[POL]   Przetwarza wiadomości, aby wyodrębnić nazwe czujnika z opcją MOV.\n[ENG]   Processes messages to extract the name value from sensor with MOV option.\n\n**Function Node 'rssiMOV'**:\n[POL]   Przetwarza wiadomości, aby wyodrębnić wartość RSSI czujnika z opcją MOV.\n[ENG]   Processes messages to extract the RSSI value from sensor with MOV option.\n\n**Function Node 'Ilość poruszeń i drgań'**:\n[POL]   Przetwarza wiadomości, aby wyodrębnić ilość poruszeń i drgań czujnika z opcją MOV.\n[ENG]   Processes messages to extract the motion and vibration count from a sensor with the MOV option.\n\n**Function Node 'status ruchu'**:\n[POL]   Przetwarza wiadomości, aby wyodrębnić status ruchu i drgań czujnika z opcją MOV.\n[ENG]   Processes messages to extract the status of movment and vibration from a sensor with the MOV option.\n",
+        "x": 490,
+        "y": 120,
+        "wires": []
+    },
+    {
+        "id": "84359e686d5d124e",
+        "type": "comment",
+        "z": "08e31230dd344cad",
+        "name": "Monitoruje połączenie MQTT",
+        "info": "**Status Node**:\n[POL]   Monitoruje status połączenia MQTT\n[ENG]   Monitors the MQTT connection status.",
+        "x": 180,
+        "y": 580,
+        "wires": []
+    },
+    {
+        "id": "8cc6780c664734c3",
+        "type": "comment",
+        "z": "08e31230dd344cad",
+        "name": "Status na wartość numeryczną",
+        "info": "**Function Node 'status mqtt'**:\n[POL]   Tłumaczy status połączenia MQTT na wartość numeryczną.\n[ENG]   Translates the MQTT connection status into a numerical value.",
+        "x": 490,
+        "y": 580,
+        "wires": []
+    },
+    {
+        "id": "8667a6e811d3231e",
+        "type": "comment",
+        "z": "08e31230dd344cad",
+        "name": "Elementy widoczne",
+        "info": "**Text Node 'Nazwa czujnika'**:\n[POL]   Wyświetla nazwę czujnika.\n[ENG]   Displays the sensor name.\n\n**Gauge Node 'rssi'**:\n[POL]   Wyświetla wartość RSSI jako miernik.\n[ENG]   Displays the RSSI value as a gauge.\n\n**Chart Node 'wykres ilości poruszeń i drgań'**:\n[POL]   Rysuje wykres ilości poruszeń i drgań w czasie.\n[ENG]   Draws a motion and vibration count chart over time.\n\n**Gauge Node 'Stan ruchu'**:\n[POL]   Wyświetla stan ruchu czujnika.\n[ENG]   Displays the motion status.\n\n**LED Node 'MQTT'**:\n[POL]   Wskaźnik LED wyświetlający status połączenia MQTT.\n[ENG]   LED indicator displaying the MQTT connection status.",
+        "x": 870,
+        "y": 120,
+        "wires": []
+    },
+    {
+        "id": "eff70016bc9b5844",
+        "type": "function",
+        "z": "08e31230dd344cad",
+        "name": "rssiANG",
+        "func": "if(msg.payload.action === \"data.scan\"){\n    if (msg.payload.data[0].deviceMac === \"D5:41:E1:A3:88:9D\"){\n        msg.payload = msg.payload.data[0].rssi;\n    } else {\n        return;\n    }    \n} else {\n    return;\n}\nreturn msg;",
+        "outputs": 1,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 420,
+        "y": 400,
+        "wires": [
+            [
+                "4e8cc78e5e32288e"
+            ]
+        ],
+        "info": "Przetwarza wiadomości, aby wyodrębnić wartość RSSI.\nProcesses messages to extract the RSSI value."
+    },
+    {
+        "id": "048725a52523a8a7",
+        "type": "function",
+        "z": "08e31230dd344cad",
+        "name": "x",
+        "func": "if(msg.payload.action === \"data.scan\"){\n    if (msg.payload.data[0].deviceMac === \"D5:41:E1:A3:88:9D\"){\n        msg.payload = msg.payload.data[0].charValues.xAxis;\n    } else {\n        return;\n    }    \n} else {\n    return;\n}\nmsg.topic = \"x\";\nreturn msg;",
+        "outputs": 1,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 410,
+        "y": 440,
+        "wires": [
+            [
+                "16931ff5a5b30142",
+                "71e9d6c265941614"
+            ]
+        ],
+        "info": "Przetwarza wiadomości, aby wyodrębnić wartość osi x.\nProcesses messages to extract the x-axis value."
+    },
+    {
+        "id": "71e9d6c265941614",
+        "type": "ui_chart",
+        "z": "08e31230dd344cad",
+        "name": "wykres x, y, z",
+        "group": "1d760889a8635587",
+        "order": 9,
+        "width": 20,
+        "height": 8,
+        "label": "",
+        "chartType": "line",
+        "legend": "true",
+        "xformat": "HH:mm:ss",
+        "interpolate": "linear",
+        "nodata": "",
+        "dot": false,
+        "ymin": "",
+        "ymax": "",
+        "removeOlder": 1,
+        "removeOlderPoints": "",
+        "removeOlderUnit": "3600",
+        "cutout": 0,
+        "useOneColor": false,
+        "useUTC": false,
+        "colors": [
+            "#1f77b4",
+            "#aec7e8",
+            "#ff7f0e",
+            "#2ca02c",
+            "#98df8a",
+            "#d62728",
+            "#ff9896",
+            "#9467bd",
+            "#c5b0d5"
+        ],
+        "outputs": 1,
+        "useDifferentColor": false,
+        "className": "",
+        "x": 850,
+        "y": 440,
+        "wires": [
+            []
+        ],
+        "info": "Rysuje wykres wartości osi x, y i z w czasie.\nDraws a chart of x, y, and z-axis values over time."
+    },
+    {
+        "id": "4e8cc78e5e32288e",
+        "type": "ui_gauge",
+        "z": "08e31230dd344cad",
+        "name": "",
+        "group": "1d760889a8635587",
+        "order": 3,
+        "width": 6,
+        "height": 3,
+        "gtype": "donut",
+        "title": "rssi",
+        "label": "dBm",
+        "format": "{{value}}",
+        "min": "-100",
+        "max": "0",
+        "colors": [
+            "#ff0000",
+            "#e6e600",
+            "#008000"
+        ],
+        "seg1": "-80",
+        "seg2": "-60",
+        "diff": false,
+        "className": "",
+        "x": 830,
+        "y": 400,
+        "wires": [],
+        "info": "Wyświetla wartość RSSI jako miernik.\nDisplays the RSSI value as a gauge."
+    },
+    {
+        "id": "dbdbf26fac9156b9",
+        "type": "comment",
+        "z": "08e31230dd344cad",
+        "name": "Przetwarzanie wiadomości ANG",
+        "info": "**Function Node 'Nazwa czujnika ANG'**:\n[POL]   Przetwarza wiadomości, aby wyodrębnić nazwe czujnika z opcją ANG.\n[ENG]   Processes messages to extract the name value from sensor with ANG option.\n\n**Function Node 'rssiANG'**:\n[POL]   Przetwarza wiadomości, aby wyodrębnić wartość RSSI czujnika z opcją ANG.\n[ENG]   Processes messages to extract the RSSI value from sensor with ANG option.\n\n**Function Node 'x', 'y', 'z'**:\n[POL]   Przetwarza wiadomości, aby wyodrębnić wartość osi x, y, z od czujnika z opcją ANG.\n[ENG]   Processes messages to extract the x-axis, y-axis, z-axis value from a sensor with the ANG option.",
+        "x": 490,
+        "y": 320,
+        "wires": []
+    },
+    {
+        "id": "73dfcd4b6004c473",
+        "type": "function",
+        "z": "08e31230dd344cad",
+        "name": "y",
+        "func": "if(msg.payload.action === \"data.scan\"){\n    if (msg.payload.data[0].deviceMac === \"D5:41:E1:A3:88:9D\"){\n        msg.payload = msg.payload.data[0].charValues.yAxis;\n    } else {\n        return;\n    }    \n} else {\n    return;\n}\nmsg.topic = \"y\";\nreturn msg;",
+        "outputs": 1,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 410,
+        "y": 480,
+        "wires": [
+            [
+                "5c4cef24eac534d0",
+                "71e9d6c265941614"
+            ]
+        ],
+        "info": "Przetwarza wiadomości, aby wyodrębnić wartość osi y.\nProcesses messages to extract the y-axis value."
+    },
+    {
+        "id": "1dae2b8df28a8391",
+        "type": "function",
+        "z": "08e31230dd344cad",
+        "name": "z",
+        "func": "if(msg.payload.action === \"data.scan\"){\n    if (msg.payload.data[0].deviceMac === \"D5:41:E1:A3:88:9D\"){\n        msg.payload = msg.payload.data[0].charValues.zAxis;\n    } else {\n        return;\n    }    \n} else {\n    return;\n}\nmsg.topic = \"z\";\nreturn msg;",
+        "outputs": 1,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 410,
+        "y": 520,
+        "wires": [
+            [
+                "e518ec6bc018ee75",
+                "71e9d6c265941614"
+            ]
+        ],
+        "info": "Przetwarza wiadomości, aby wyodrębnić wartość osi z.\nProcesses messages to extract the z-axis value."
+    },
+    {
+        "id": "b198b4d129898a81",
+        "type": "function",
+        "z": "08e31230dd344cad",
+        "name": "status ruchu",
+        "func": "if(msg.payload.action === \"data.scan\"){\n    if (msg.payload.data[0].deviceMac === \"ED:7D:BB:AF:59:B2\"){\n        msg.payload = msg.payload.data[0].charValues.alertLevel.state;\n    } else {\n        return;\n    }    \n} else {\n    return;\n}\nreturn msg;",
+        "outputs": 1,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 430,
+        "y": 280,
+        "wires": [
+            [
+                "5ac4c238c647e862"
+            ]
+        ],
+        "info": "Przetwarza wiadomości, aby wyodrębnić status ruchu.\nProcesses messages to extract the motion status."
+    },
+    {
+        "id": "5ac4c238c647e862",
+        "type": "ui_gauge",
+        "z": "08e31230dd344cad",
+        "name": "",
+        "group": "a97883d12d358ba6",
+        "order": 2,
+        "width": 5,
+        "height": 3,
+        "gtype": "wave",
+        "title": "Stan ruchu",
+        "label": "",
+        "format": "{{value}}",
+        "min": "0",
+        "max": "1",
+        "colors": [
+            "#ff0000",
+            "#e6e600",
+            "#008000"
+        ],
+        "seg1": "-80",
+        "seg2": "-60",
+        "diff": false,
+        "className": "",
+        "x": 850,
+        "y": 280,
+        "wires": [],
+        "info": "Wyświetla stan ruchu jako miernik.\nDisplays the motion status as a gauge."
+    },
+    {
+        "id": "8c5a78f41fa01d56",
+        "type": "function",
+        "z": "08e31230dd344cad",
+        "name": "Nazwa czujnika MOV",
+        "func": "if(msg.payload.action === \"data.scan\"){\n    if (msg.payload.data[0].deviceMac === \"ED:7D:BB:AF:59:B2\"){\n        msg.payload = msg.payload.data[0].name;\n    } else {\n        return;\n    }    \n} else {\n    return;\n}\nreturn msg;",
+        "outputs": 1,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 460,
+        "y": 160,
+        "wires": [
+            [
+                "1603c6b9401ff021"
+            ]
+        ],
+        "info": "Przetwarza wiadomości, aby wyodrębnić nazwę czujnika.\nProcesses messages to extract the sensor name."
+    },
+    {
+        "id": "908225545151e993",
+        "type": "function",
+        "z": "08e31230dd344cad",
+        "name": "Nazwa czujnika ANG",
+        "func": "if(msg.payload.action === \"data.scan\"){\n    if (msg.payload.data[0].deviceMac === \"D5:41:E1:A3:88:9D\"){\n        msg.payload = msg.payload.data[0].name;\n    } else {\n        return;\n    }    \n} else {\n    return;\n}\nreturn msg;",
+        "outputs": 1,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 460,
+        "y": 360,
+        "wires": [
+            [
+                "54b0dd7b2e065a34"
+            ]
+        ],
+        "info": "Przetwarza wiadomości, aby wyodrębnić nazwę czujnika.\nProcesses messages to extract the sensor name."
+    },
+    {
+        "id": "16931ff5a5b30142",
+        "type": "ui_text",
+        "z": "08e31230dd344cad",
+        "group": "1d760889a8635587",
+        "order": 2,
+        "width": 3,
+        "height": 1,
+        "name": "",
+        "label": "x:",
+        "format": "{{msg.payload}}",
+        "layout": "row-spread",
+        "className": "",
+        "style": true,
+        "font": "Lucida Sans Unicode,Lucida Grande,sans-serif",
+        "fontSize": "20",
+        "color": "#000000",
+        "x": 830,
+        "y": 480,
+        "wires": [],
+        "info": "Wyświetla wartość osi x.\nDisplays the x-axis value."
+    },
+    {
+        "id": "5c4cef24eac534d0",
+        "type": "ui_text",
+        "z": "08e31230dd344cad",
+        "group": "1d760889a8635587",
+        "order": 5,
+        "width": 3,
+        "height": 1,
+        "name": "",
+        "label": "y:",
+        "format": "{{msg.payload}}",
+        "layout": "row-spread",
+        "className": "",
+        "style": true,
+        "font": "Lucida Sans Unicode,Lucida Grande,sans-serif",
+        "fontSize": "20",
+        "color": "#000000",
+        "x": 830,
+        "y": 520,
+        "wires": [],
+        "info": "Wyświetla wartość osi y.\nDisplays the y-axis value."
+    },
+    {
+        "id": "e518ec6bc018ee75",
+        "type": "ui_text",
+        "z": "08e31230dd344cad",
+        "group": "1d760889a8635587",
+        "order": 7,
+        "width": 3,
+        "height": 1,
+        "name": "",
+        "label": "z:",
+        "format": "{{msg.payload}}",
+        "layout": "row-spread",
+        "className": "",
+        "style": true,
+        "font": "Lucida Sans Unicode,Lucida Grande,sans-serif",
+        "fontSize": "20",
+        "color": "#000000",
+        "x": 830,
+        "y": 560,
+        "wires": [],
+        "info": "Wyświetla wartość osi z.\nDisplays the z-axis value."
+    },
+    {
+        "id": "5d3d546fa6e69f2a",
+        "type": "ui_led",
+        "z": "08e31230dd344cad",
+        "order": 4,
+        "group": "1d760889a8635587",
+        "width": 3,
+        "height": 1,
+        "label": "MQTT",
+        "labelPlacement": "left",
+        "labelAlignment": "left",
+        "colorForValue": [
+            {
+                "color": "#ff0000",
+                "value": "0",
+                "valueType": "num"
+            },
+            {
+                "color": "#ffff00",
+                "value": "1",
+                "valueType": "num"
+            },
+            {
+                "color": "#008000",
+                "value": "2",
+                "valueType": "num"
+            }
+        ],
+        "allowColorForValueInMessage": false,
+        "shape": "circle",
+        "showGlow": true,
+        "name": "",
+        "x": 830,
+        "y": 660,
+        "wires": [],
+        "info": "Wskaźnik LED wyświetlający status połączenia MQTT.\nLED indicator displaying the MQTT connection status."
+    },
+    {
+        "id": "54116dfe735dc4d8",
+        "type": "ui_spacer",
+        "z": "08e31230dd344cad",
+        "name": "spacer",
+        "group": "a97883d12d358ba6",
+        "order": 5,
+        "width": 6,
+        "height": 1
+    },
+    {
+        "id": "c62b62a3446227a2",
+        "type": "ui_spacer",
+        "z": "08e31230dd344cad",
+        "name": "spacer",
+        "group": "a97883d12d358ba6",
+        "order": 6,
+        "width": 3,
+        "height": 1
+    },
+    {
+        "id": "1fc6868ab7a0c025",
+        "type": "ui_spacer",
+        "z": "08e31230dd344cad",
+        "name": "spacer",
+        "group": "a97883d12d358ba6",
+        "order": 7,
+        "width": 6,
+        "height": 1
+    },
+    {
+        "id": "cad35a76743e1cc1",
+        "type": "ui_spacer",
+        "z": "08e31230dd344cad",
+        "name": "spacer",
+        "group": "a97883d12d358ba6",
+        "order": 8,
+        "width": 3,
+        "height": 1
+    },
+    {
+        "id": "a3b4e187c125fb75",
+        "type": "ui_spacer",
+        "z": "08e31230dd344cad",
+        "name": "spacer",
+        "group": "1d760889a8635587",
+        "order": 6,
+        "width": 3,
+        "height": 1
+    },
+    {
+        "id": "0d19cd6150c84152",
+        "type": "ui_spacer",
+        "z": "08e31230dd344cad",
+        "name": "spacer",
+        "group": "1d760889a8635587",
+        "order": 8,
+        "width": 3,
+        "height": 1
+    },
+    {
+        "id": "e1479a11339689c8",
+        "type": "ui_spacer",
+        "z": "08e31230dd344cad",
+        "name": "spacer",
+        "group": "8fd607afb4745910",
+        "order": 2,
+        "width": 1,
+        "height": 1
+    },
+    {
+        "id": "718082386e7ba56b",
+        "type": "ui_spacer",
+        "z": "08e31230dd344cad",
+        "name": "spacer",
+        "group": "8fd607afb4745910",
+        "order": 6,
+        "width": 1,
+        "height": 1
+    },
+    {
+        "id": "25c1c5276d1c22ef",
+        "type": "ui_spacer",
+        "z": "08e31230dd344cad",
+        "name": "spacer",
+        "group": "8fd607afb4745910",
+        "order": 7,
+        "width": 3,
+        "height": 1
+    },
+    {
+        "id": "b15c6143259e4f04",
+        "type": "ui_spacer",
+        "z": "08e31230dd344cad",
+        "name": "spacer",
+        "group": "8fd607afb4745910",
+        "order": 8,
+        "width": 11,
+        "height": 1
+    },
+    {
+        "id": "9592ce425f8e9e16",
+        "type": "ui_spacer",
+        "z": "08e31230dd344cad",
+        "name": "spacer",
+        "group": "8fd607afb4745910",
+        "order": 9,
+        "width": 3,
+        "height": 1
+    },
+    {
+        "id": "038eb83fd0c55fe9",
+        "type": "mqtt-broker",
+        "name": "",
+        "broker": "10.80.0.15",
+        "port": "1883",
+        "clientid": "",
+        "autoConnect": true,
+        "usetls": false,
+        "protocolVersion": "4",
+        "keepalive": "60",
+        "cleansession": true,
+        "autoUnsubscribe": true,
+        "birthTopic": "",
+        "birthQos": "0",
+        "birthRetain": "false",
+        "birthPayload": "",
+        "birthMsg": {},
+        "closeTopic": "",
+        "closeQos": "0",
+        "closeRetain": "false",
+        "closePayload": "",
+        "closeMsg": {},
+        "willTopic": "",
+        "willQos": "0",
+        "willRetain": "false",
+        "willPayload": "",
+        "willMsg": {},
+        "userProps": "",
+        "sessionExpiry": ""
+    },
+    {
+        "id": "a97883d12d358ba6",
+        "type": "ui_group",
+        "name": "Czujnik ruchu i drgań MOV",
+        "tab": "179dde65bf75e1b2",
+        "order": 2,
+        "disp": true,
+        "width": "20",
+        "collapse": false,
+        "className": ""
+    },
+    {
+        "id": "1d760889a8635587",
+        "type": "ui_group",
+        "name": "Czujnik ruchu i drgań ANG",
+        "tab": "179dde65bf75e1b2",
+        "order": 3,
+        "disp": true,
+        "width": 20,
+        "collapse": false,
+        "className": ""
+    },
+    {
+        "id": "179dde65bf75e1b2",
+        "type": "ui_tab",
+        "name": "Ekran główny",
+        "icon": "weekend",
+        "order": 1,
+        "disabled": false,
+        "hidden": false
+    }
+]
