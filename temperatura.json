@@ -266,7 +266,7 @@
         "order": 3,
         "width": 6,
         "height": 3,
-        "gtype": "gage",
+        "gtype": "donut",
         "title": "rssi",
         "label": "dBm",
         "format": "{{value}}",
