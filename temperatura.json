@@ -1,6 +1,6 @@
 [
     {
-        "id": "e01ca6b503c19193",
+        "id": "3e6505394cf48b86",
         "type": "tab",
         "label": "Aplikacja dla czujnika temperatury",
         "disabled": false,
@@ -8,12 +8,12 @@
         "env": []
     },
     {
-        "id": "2174ad610ae77826",
+        "id": "9cd0b00adb8a2600",
         "type": "mqtt in",
-        "z": "e01ca6b503c19193",
+        "z": "3e6505394cf48b86",
         "name": "",
-        "topic": "AMC/test",
-        "qos": "2",
+        "topic": "AMC",
+        "qos": "1",
         "datatype": "auto-detect",
         "broker": "038eb83fd0c55fe9",
         "nl": false,
@@ -24,21 +24,21 @@
         "y": 260,
         "wires": [
             [
-                "a452cd7d15af086b",
-                "af01ec527d587c85",
-                "e6a07528c2739d54",
-                "191b4e3a459394e8",
-                "751578c90960609e"
+                "ab072c318ce339a7",
+                "07b374d37144a1c9",
+                "3ce1fda225948d6f",
+                "e160a0920f472a32",
+                "0ef219cd919cd8a8"
             ]
         ],
-        "info": "Odbiera wiadomości z tematu 'AMC/test' na serwerze MQTT.\nReceives messages from the topic 'AMC/test' on the MQTT server."
+        "info": "Odbiera wiadomości z tematu 'AMC' na serwerze MQTT.\nReceives messages from the topic 'AMC' on the MQTT server."
     },
     {
-        "id": "a452cd7d15af086b",
+        "id": "ab072c318ce339a7",
         "type": "function",
-        "z": "e01ca6b503c19193",
+        "z": "3e6505394cf48b86",
         "name": "rssi",
-        "func": "if(msg.payload.action === \"data.scan\"){\n    msg.payload = msg.payload.data[0].rssi;\n} else {\n    return;\n}\nreturn msg;",
+        "func": "if (msg.payload.action === \"data.scan\"){\n    if (msg.payload.data[0].model === \"ELA_T\"){\n        msg.payload = msg.payload.data[0].rssi;\n    } else {\n        return;\n    }\n} else {\n    return;\n}\nreturn msg;",
         "outputs": 1,
         "timeout": 0,
         "noerr": 0,
@@ -49,17 +49,17 @@
         "y": 320,
         "wires": [
             [
-                "a9e2fe4a84313054"
+                "39dcb38ec367c586"
             ]
         ],
         "info": "Przetwarza wiadomości, aby wyodrębnić wartość RSSI.\nProcesses messages to extract the RSSI value."
     },
     {
-        "id": "af01ec527d587c85",
+        "id": "07b374d37144a1c9",
         "type": "function",
-        "z": "e01ca6b503c19193",
+        "z": "3e6505394cf48b86",
         "name": "temperatura",
-        "func": "if(msg.payload.action === \"data.scan\"){\n    msg.payload = msg.payload.data[0].charValues.temperature;\n} else {\n    return;\n}\nmsg.topic = \"temperatura\";\nreturn msg;",
+        "func": "if (msg.payload.action === \"data.scan\"){\n    if (msg.payload.data[0].model === \"ELA_T\"){\n        msg.payload = msg.payload.data[0].charValues.temperature;\n    } else {\n        return;\n    }\n} else {\n    return;\n}\nmsg.topic = \"Temperatura\";\nreturn msg;",
         "outputs": 1,
         "timeout": 0,
         "noerr": 0,
@@ -70,16 +70,16 @@
         "y": 360,
         "wires": [
             [
-                "1cfb65b5d9b8f75f"
+                "017e53c7cd85452c"
             ]
         ],
         "info": "Przetwarza wiadomości, aby wyodrębnić wartość temperatury.\nProcesses messages to extract the temperature value."
     },
     {
-        "id": "e6a07528c2739d54",
+        "id": "3ce1fda225948d6f",
         "type": "ui_text",
-        "z": "e01ca6b503c19193",
-        "group": "8fd607afb4745910",
+        "z": "3e6505394cf48b86",
+        "group": "cf5babd6a84d2855",
         "order": 1,
         "width": 10,
         "height": 1,
@@ -98,9 +98,9 @@
         "info": "Wyświetla nazwę czujnika.\nDisplays the sensor name."
     },
     {
-        "id": "191b4e3a459394e8",
+        "id": "e160a0920f472a32",
         "type": "debug",
-        "z": "e01ca6b503c19193",
+        "z": "3e6505394cf48b86",
         "name": "debug 30",
         "active": false,
         "tosidebar": true,
@@ -116,26 +116,26 @@
         "info": "Służy do debugowania wiadomości.\nUsed for debugging messages."
     },
     {
-        "id": "3be636fcb1576b66",
+        "id": "d60a9c2e4056e839",
         "type": "status",
-        "z": "e01ca6b503c19193",
+        "z": "3e6505394cf48b86",
         "name": "",
         "scope": [
-            "2174ad610ae77826"
+            "9cd0b00adb8a2600"
         ],
         "x": 120,
         "y": 540,
         "wires": [
             [
-                "e1d63cab4d92ea97"
+                "d38c90f3dde9a2f8"
             ]
         ],
         "info": "Monitoruje status połączenia MQTT.\nMonitors the MQTT connection status."
     },
     {
-        "id": "e1d63cab4d92ea97",
+        "id": "d38c90f3dde9a2f8",
         "type": "function",
-        "z": "e01ca6b503c19193",
+        "z": "3e6505394cf48b86",
         "name": "status mqtt",
         "func": "if(msg.status.fill === \"green\") {\n    msg.payload = 2;\n} else if (msg.status.fill === \"yellow\") {\n    msg.payload = 1;\n} else if (msg.status.fill === \"red\") {\n    msg.payload = 0;\n}\nreturn msg;",
         "outputs": 1,
@@ -148,17 +148,17 @@
         "y": 540,
         "wires": [
             [
-                "670f1106f84626f4"
+                "2cef4c861015217f"
             ]
         ],
         "info": "Tłumaczy status połączenia MQTT na wartość numeryczną.\nTranslates the MQTT connection status into a numerical value."
     },
     {
-        "id": "670f1106f84626f4",
+        "id": "2cef4c861015217f",
         "type": "ui_led",
-        "z": "e01ca6b503c19193",
+        "z": "3e6505394cf48b86",
         "order": 4,
-        "group": "8fd607afb4745910",
+        "group": "cf5babd6a84d2855",
         "width": 3,
         "height": 1,
         "label": "MQTT",
@@ -191,10 +191,10 @@
         "info": "Wskaźnik LED wyświetlający status połączenia MQTT.\nLED indicator displaying the MQTT connection status."
     },
     {
-        "id": "751578c90960609e",
+        "id": "0ef219cd919cd8a8",
         "type": "ui_text",
-        "z": "e01ca6b503c19193",
-        "group": "8fd607afb4745910",
+        "z": "3e6505394cf48b86",
+        "group": "cf5babd6a84d2855",
         "order": 5,
         "width": 10,
         "height": 1,
@@ -213,11 +213,11 @@
         "info": "Wyświetla wartość temperatury.\nDisplays the temperature value."
     },
     {
-        "id": "1cfb65b5d9b8f75f",
+        "id": "017e53c7cd85452c",
         "type": "ui_chart",
-        "z": "e01ca6b503c19193",
+        "z": "3e6505394cf48b86",
         "name": "wykresTemperatury",
-        "group": "8fd607afb4745910",
+        "group": "cf5babd6a84d2855",
         "order": 10,
         "width": 20,
         "height": 8,
@@ -258,11 +258,11 @@
         "info": "Rysuje wykres temperatury w czasie.\nDraws a temperature chart over time."
     },
     {
-        "id": "a9e2fe4a84313054",
+        "id": "39dcb38ec367c586",
         "type": "ui_gauge",
-        "z": "e01ca6b503c19193",
+        "z": "3e6505394cf48b86",
         "name": "",
-        "group": "8fd607afb4745910",
+        "group": "cf5babd6a84d2855",
         "order": 3,
         "width": 6,
         "height": 3,
@@ -287,29 +287,29 @@
         "info": "Wyświetla wartość RSSI jako miernik.\nDisplays the RSSI value as a gauge."
     },
     {
-        "id": "2cbf6768888c26c8",
+        "id": "018a38f8791887fa",
         "type": "comment",
-        "z": "e01ca6b503c19193",
+        "z": "3e6505394cf48b86",
         "name": "Odbieranie wiadomości",
-        "info": "**MQTT In Node**:\n[POL]   Odbieranie wiadomości z tematu AMC/test na serwerze MQTT\n[ENG]   Receives messages from the topic \"AMC/test\" on the MQTT server\n",
+        "info": "**MQTT In Node**:\n[POL]   Odbieranie wiadomości z tematu AMC na serwerze MQTT\n[ENG]   Receives messages from the topic \"AMC\" on the MQTT server\n",
         "x": 140,
         "y": 200,
         "wires": []
     },
     {
-        "id": "94580c5c3cf8cdf5",
+        "id": "46f3946b16988429",
         "type": "comment",
-        "z": "e01ca6b503c19193",
+        "z": "3e6505394cf48b86",
         "name": "Przetwarzanie wiadomości",
         "info": "**Function Node \"rssi\"**:\n[POL]   Przetwarza wiadomości, aby wyodrębnić wartość RSSI.\n[ENG]   Processes messages to extract the RSSI value\n\n**Function Node \"temperatura\"**:\n[POL]   Przetwarza wiadomości, aby wyodrębnić wartość temperatury\n[ENG]   Processes messages to extract the temperature value.\n",
         "x": 470,
-        "y": 280,
+        "y": 260,
         "wires": []
     },
     {
-        "id": "b98c04409b4f4bc2",
+        "id": "765d4f2bf7d6d561",
         "type": "comment",
-        "z": "e01ca6b503c19193",
+        "z": "3e6505394cf48b86",
         "name": "Monitoruje połączenie MQTT",
         "info": "**Status Node**:\n[POL]   Monitoruje status połączenia MQTT\n[ENG]   Monitors the MQTT connection status",
         "x": 180,
@@ -317,9 +317,9 @@
         "wires": []
     },
     {
-        "id": "7e1e830e6d3c3ace",
+        "id": "f6ee0cf2cfe16ae4",
         "type": "comment",
-        "z": "e01ca6b503c19193",
+        "z": "3e6505394cf48b86",
         "name": "Status na wartość numeryczną",
         "info": "**Function Node \"status mqtt\"**:\n[POL]   Tłumaczy status połączenia MQTT na wartość numeryczną.\n[ENG]   Translates the MQTT connection status into a numerical value",
         "x": 490,
@@ -327,9 +327,9 @@
         "wires": []
     },
     {
-        "id": "bc26acca7eadb054",
+        "id": "b97287c1763d2d52",
         "type": "comment",
-        "z": "e01ca6b503c19193",
+        "z": "3e6505394cf48b86",
         "name": "Elementy widoczne",
         "info": "**Text Node \"Nazwa czujnika\"**:\n[POL]   Wyświetla nazwę czujnika.\n[ENG]   Displays the sensor name.\n\n**Text Node \"temperatura\"**:\n[POL]   Wyświetla wartość temperatury.\n[ENG]   Displays the temperature value.\n\n**Chart Node \"wykresTemperatury\"**:\n[POL]   Rysuje wykres temperatury w czasie.\n[ENG]   Draws a temperature chart over time.\n\n**Gauge Node \"rssi\"**:\n[POL]   Wyświetla wartość RSSI jako miernik.\n[ENG]   Displays the RSSI value as a gauge\n\n**LED Node \"MQTT\"**:\n[POL]   Wskaźnik LED wyświetlający status połączenia MQTT.\n[ENG]   LED indicator displaying the MQTT connection status.",
         "x": 870,
@@ -337,121 +337,121 @@
         "wires": []
     },
     {
-        "id": "2d201e0f3c0646bb",
+        "id": "3b63092799eb785a",
         "type": "ui_spacer",
-        "z": "e01ca6b503c19193",
+        "z": "3e6505394cf48b86",
         "name": "spacer",
-        "group": "a97883d12d358ba6",
+        "group": "7e7b17b88c831819",
         "order": 5,
         "width": 3,
         "height": 1
     },
     {
-        "id": "a491189f3984503a",
+        "id": "88e567143d304376",
         "type": "ui_spacer",
-        "z": "e01ca6b503c19193",
+        "z": "3e6505394cf48b86",
         "name": "spacer",
-        "group": "a97883d12d358ba6",
+        "group": "7e7b17b88c831819",
         "order": 6,
         "width": 3,
         "height": 1
     },
     {
-        "id": "0996d61ae7171da9",
+        "id": "1c6cc336111491f6",
         "type": "ui_spacer",
-        "z": "e01ca6b503c19193",
+        "z": "3e6505394cf48b86",
         "name": "spacer",
-        "group": "1d760889a8635587",
+        "group": "d6ff3da247dc883c",
         "order": 2,
         "width": 1,
         "height": 1
     },
     {
-        "id": "b3714f1b8681fa79",
+        "id": "0f0d01b46486bfb0",
         "type": "ui_spacer",
-        "z": "e01ca6b503c19193",
+        "z": "3e6505394cf48b86",
         "name": "spacer",
-        "group": "1d760889a8635587",
+        "group": "d6ff3da247dc883c",
         "order": 6,
         "width": 1,
         "height": 1
     },
     {
-        "id": "cb015ab70a6d8a3c",
+        "id": "58d03ef1f0886ae4",
         "type": "ui_spacer",
-        "z": "e01ca6b503c19193",
+        "z": "3e6505394cf48b86",
         "name": "spacer",
-        "group": "1d760889a8635587",
+        "group": "d6ff3da247dc883c",
         "order": 8,
         "width": 3,
         "height": 1
     },
     {
-        "id": "f51249318e206483",
+        "id": "9aa63e94831d2365",
         "type": "ui_spacer",
-        "z": "e01ca6b503c19193",
+        "z": "3e6505394cf48b86",
         "name": "spacer",
-        "group": "1d760889a8635587",
+        "group": "d6ff3da247dc883c",
         "order": 9,
         "width": 1,
         "height": 1
     },
     {
-        "id": "858a156dce49347a",
+        "id": "e9f431df3fbfa21b",
         "type": "ui_spacer",
-        "z": "e01ca6b503c19193",
+        "z": "3e6505394cf48b86",
         "name": "spacer",
-        "group": "1d760889a8635587",
+        "group": "d6ff3da247dc883c",
         "order": 11,
         "width": 3,
         "height": 1
     },
     {
-        "id": "d74814550f024029",
+        "id": "e9b4460a3f4687ae",
         "type": "ui_spacer",
-        "z": "e01ca6b503c19193",
+        "z": "3e6505394cf48b86",
         "name": "spacer",
-        "group": "8fd607afb4745910",
+        "group": "cf5babd6a84d2855",
         "order": 2,
         "width": 1,
         "height": 1
     },
     {
-        "id": "c8a316c44f7eb47d",
+        "id": "40ba0745d8ebe3f6",
         "type": "ui_spacer",
-        "z": "e01ca6b503c19193",
+        "z": "3e6505394cf48b86",
         "name": "spacer",
-        "group": "8fd607afb4745910",
+        "group": "cf5babd6a84d2855",
         "order": 6,
         "width": 1,
         "height": 1
     },
     {
-        "id": "b9f346ad276a8089",
+        "id": "8651aa88b507acac",
         "type": "ui_spacer",
-        "z": "e01ca6b503c19193",
+        "z": "3e6505394cf48b86",
         "name": "spacer",
-        "group": "8fd607afb4745910",
+        "group": "cf5babd6a84d2855",
         "order": 7,
         "width": 3,
         "height": 1
     },
     {
-        "id": "3f98de27519d4106",
+        "id": "68760ecf1d810efe",
         "type": "ui_spacer",
-        "z": "e01ca6b503c19193",
+        "z": "3e6505394cf48b86",
         "name": "spacer",
-        "group": "8fd607afb4745910",
+        "group": "cf5babd6a84d2855",
         "order": 8,
         "width": 11,
         "height": 1
     },
     {
-        "id": "9cdbdbde010397d3",
+        "id": "baecfdc27ec8d4f1",
         "type": "ui_spacer",
-        "z": "e01ca6b503c19193",
+        "z": "3e6505394cf48b86",
         "name": "spacer",
-        "group": "8fd607afb4745910",
+        "group": "cf5babd6a84d2855",
         "order": 9,
         "width": 3,
         "height": 1
@@ -460,8 +460,8 @@
         "id": "038eb83fd0c55fe9",
         "type": "mqtt-broker",
         "name": "",
-        "broker": "10.80.0.15",
-        "port": "1883",
+        "broker": "10.80.0.7",
+        "port": "1833",
         "clientid": "",
         "autoConnect": true,
         "usetls": false,
@@ -488,10 +488,10 @@
         "sessionExpiry": ""
     },
     {
-        "id": "8fd607afb4745910",
+        "id": "cf5babd6a84d2855",
         "type": "ui_group",
         "name": "Czujnik temperatury",
-        "tab": "179dde65bf75e1b2",
+        "tab": "27dfe47685640fe5",
         "order": 3,
         "disp": true,
         "width": 20,
@@ -499,10 +499,10 @@
         "className": ""
     },
     {
-        "id": "a97883d12d358ba6",
+        "id": "7e7b17b88c831819",
         "type": "ui_group",
         "name": "Czujnik ruchu i drgań MOV",
-        "tab": "179dde65bf75e1b2",
+        "tab": "27dfe47685640fe5",
         "order": 2,
         "disp": true,
         "width": "20",
@@ -510,10 +510,10 @@
         "className": ""
     },
     {
-        "id": "1d760889a8635587",
+        "id": "d6ff3da247dc883c",
         "type": "ui_group",
         "name": "Czujnik ruchu i drgań ANG",
-        "tab": "179dde65bf75e1b2",
+        "tab": "27dfe47685640fe5",
         "order": 3,
         "disp": true,
         "width": 20,
@@ -521,7 +521,7 @@
         "className": ""
     },
     {
-        "id": "179dde65bf75e1b2",
+        "id": "27dfe47685640fe5",
         "type": "ui_tab",
         "name": "Ekran główny",
         "icon": "weekend",
