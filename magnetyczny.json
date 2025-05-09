@@ -1,0 +1,671 @@
+[
+    {
+        "id": "3e6505394cf48b86",
+        "type": "tab",
+        "label": "Aplikacja dla czujnika magnetycznego",
+        "disabled": false,
+        "info": "",
+        "env": []
+    },
+    {
+        "id": "d69dd1b524780d88",
+        "type": "ui_text",
+        "z": "3e6505394cf48b86",
+        "group": "1ca5563fcbfe4fc4",
+        "order": 1,
+        "width": 7,
+        "height": 1,
+        "name": "",
+        "label": "Nazwa czujnika:",
+        "format": "{{msg.payload}}",
+        "layout": "row-left",
+        "className": "",
+        "style": false,
+        "font": "",
+        "fontSize": 16,
+        "color": "#000000",
+        "x": 840,
+        "y": 180,
+        "wires": [],
+        "info": "Wyświetla nazwę czujnika.\r\nDisplays the sensor name."
+    },
+    {
+        "id": "5daac764c97a149c",
+        "type": "function",
+        "z": "3e6505394cf48b86",
+        "name": "MAG nazwa",
+        "func": "if (msg.payload.action === \"data.scan\"){\n    if (msg.payload.data[0].model === \"ELA_MAG\"){\n        msg.payload = msg.payload.data[0].name;\n    } else {\n        return;\n    }\n} else {\n    return;\n}\nreturn msg;",
+        "outputs": 1,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 650,
+        "y": 180,
+        "wires": [
+            [
+                "d69dd1b524780d88"
+            ]
+        ],
+        "info": "Przetwarza wiadomości, aby wyodrębnić nazwę czujnika.\r\nProcesses messages to extract the sensor name."
+    },
+    {
+        "id": "4f66617acef35058",
+        "type": "ui_text",
+        "z": "3e6505394cf48b86",
+        "group": "1ca5563fcbfe4fc4",
+        "order": 5,
+        "width": 3,
+        "height": 1,
+        "name": "",
+        "label": "Stan:",
+        "format": "{{msg.payload}}",
+        "layout": "row-spread",
+        "className": "",
+        "style": false,
+        "font": "",
+        "fontSize": 16,
+        "color": "#000000",
+        "x": 810,
+        "y": 220,
+        "wires": [],
+        "info": "Wyświetla stan pola magnetycznego.\r\nDisplays the status of the magnetic field."
+    },
+    {
+        "id": "f4dfd455a8778a43",
+        "type": "function",
+        "z": "3e6505394cf48b86",
+        "name": "MAG state",
+        "func": "if (msg.payload.action === \"data.scan\"){\n    if (msg.payload.data[0].model === \"ELA_MAG\"){\n        if (Object.keys(msg.payload.data[0].charValues).length > 0){\n            msg.payload = msg.payload.data[0].charValues.alertLevel.state;\n        } else {\n            return;\n        }      \n    } else {\n        return;\n    }\n} else {\n    return;\n}\nmsg.topic = \"stan\";\nreturn msg;",
+        "outputs": 1,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 650,
+        "y": 220,
+        "wires": [
+            [
+                "4f66617acef35058",
+                "f28d2d02a00bd07d"
+            ]
+        ],
+        "info": "Przetwarza wiadomości, aby wyodrębnić status pola magnetycznego.\r\nProcesses messages to extract the status of the magnetic field.\r\n"
+    },
+    {
+        "id": "6bfd27fa38f43888",
+        "type": "ui_text",
+        "z": "3e6505394cf48b86",
+        "group": "1ca5563fcbfe4fc4",
+        "order": 6,
+        "width": 4,
+        "height": 1,
+        "name": "",
+        "label": "Counter:",
+        "format": "{{msg.payload}}",
+        "layout": "row-spread",
+        "className": "",
+        "style": false,
+        "font": "",
+        "fontSize": 16,
+        "color": "#000000",
+        "x": 820,
+        "y": 260,
+        "wires": [],
+        "info": "Wyświetla ilość zmnian pola magnetycznego.\r\nDisplays the amount of sensor contact with the magnet."
+    },
+    {
+        "id": "1a722fe93b18371b",
+        "type": "function",
+        "z": "3e6505394cf48b86",
+        "name": "MAG count",
+        "func": "if (msg.payload.action === \"data.scan\"){\n    if (msg.payload.data[0].model === \"ELA_MAG\"){\n        if (Object.keys(msg.payload.data[0].charValues).length > 0){\n            msg.payload = msg.payload.data[0].charValues.alertLevel.counter;\n        } else {\n            return;\n        }      \n    } else {\n        return;\n    }\n} else {\n    return;\n}\nmsg.topic = \"licznik\";\nreturn msg;",
+        "outputs": 1,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 650,
+        "y": 260,
+        "wires": [
+            [
+                "6bfd27fa38f43888",
+                "f1f1c7211debaaf1"
+            ]
+        ],
+        "info": "Przetwarza wiadomości, aby wyodrębnić ilość kontaktu czujnika z magnesem (ilość zmian w polu magnetycznym).\r\nProcesses messages to extract the amount of sensor contact with the magnet."
+    },
+    {
+        "id": "f1f1c7211debaaf1",
+        "type": "ui_chart",
+        "z": "3e6505394cf48b86",
+        "name": "MAG",
+        "group": "1ca5563fcbfe4fc4",
+        "order": 8,
+        "width": "0",
+        "height": "0",
+        "label": "",
+        "chartType": "line",
+        "legend": "true",
+        "xformat": "HH:mm:ss",
+        "interpolate": "linear",
+        "nodata": "",
+        "dot": false,
+        "ymin": "",
+        "ymax": "",
+        "removeOlder": "5",
+        "removeOlderPoints": "",
+        "removeOlderUnit": "60",
+        "cutout": 0,
+        "useOneColor": false,
+        "useUTC": false,
+        "colors": [
+            "#1f77b4",
+            "#aec7e8",
+            "#ff7f0e",
+            "#2ca02c",
+            "#98df8a",
+            "#d62728",
+            "#ff9896",
+            "#9467bd",
+            "#c5b0d5"
+        ],
+        "outputs": 1,
+        "useDifferentColor": false,
+        "className": "",
+        "x": 950,
+        "y": 260,
+        "wires": [
+            []
+        ],
+        "info": "Rysuje wykres ilość kontaktu czujnika z magnesem.\r\nDraws the amount of sensor contact with the magnet."
+    },
+    {
+        "id": "83a7af3c8f3b6bde",
+        "type": "function",
+        "z": "3e6505394cf48b86",
+        "name": "MAG rssi",
+        "func": "if (msg.payload.action === \"data.scan\"){\n    if (msg.payload.data[0].model === \"ELA_MAG\"){\n        msg.payload = msg.payload.data[0].rssi;\n    } else {\n        return;\n    }\n} else {\n    return;\n}\nreturn msg;",
+        "outputs": 1,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 640,
+        "y": 300,
+        "wires": [
+            [
+                "e1d66a06cf46e83b"
+            ]
+        ],
+        "info": "Przetwarza wiadomości, aby wyodrębnić wartość RSSI.\r\nProcesses messages to extract the RSSI value."
+    },
+    {
+        "id": "e1d66a06cf46e83b",
+        "type": "ui_gauge",
+        "z": "3e6505394cf48b86",
+        "name": "",
+        "group": "1ca5563fcbfe4fc4",
+        "order": 3,
+        "width": 3,
+        "height": 2,
+        "gtype": "donut",
+        "title": "rssi",
+        "label": "",
+        "format": "{{value}}",
+        "min": "-100",
+        "max": "0",
+        "colors": [
+            "#ff0000",
+            "#e6e600",
+            "#008000"
+        ],
+        "seg1": "-85",
+        "seg2": "-65",
+        "diff": false,
+        "className": "",
+        "x": 850,
+        "y": 300,
+        "wires": [],
+        "info": "Wyświetla wartość RSSI jako miernik.\r\nDisplays the RSSI value as a gauge."
+    },
+    {
+        "id": "f28d2d02a00bd07d",
+        "type": "ui_gauge",
+        "z": "3e6505394cf48b86",
+        "name": "",
+        "group": "1ca5563fcbfe4fc4",
+        "order": 2,
+        "width": 3,
+        "height": 2,
+        "gtype": "wave",
+        "title": "Stan",
+        "label": "",
+        "format": "{{value}}",
+        "min": 0,
+        "max": "1",
+        "colors": [
+            "#00b500",
+            "#e6e600",
+            "#ca3838"
+        ],
+        "seg1": "",
+        "seg2": "",
+        "diff": false,
+        "className": "",
+        "x": 950,
+        "y": 220,
+        "wires": [],
+        "info": "Wyświetla stan pola magnetycznego jako miernik.\r\nDisplays the status of the magnetic field as a gauge."
+    },
+    {
+        "id": "2f0eb7bf05128f89",
+        "type": "function",
+        "z": "3e6505394cf48b86",
+        "name": "MAG bateria",
+        "func": "if (msg.payload.action === \"data.scan\"){\n    if (msg.payload.data[0].model === \"ELA_MAG\"){\n        msg.payload = msg.payload.data[0].mfrValues.batteryVoltage;\n    } else {\n        return;\n    }\n} else {\n    return;\n}\nreturn msg;",
+        "outputs": 1,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 650,
+        "y": 340,
+        "wires": [
+            [
+                "ab89b34a6bc10821"
+            ]
+        ],
+        "info": "Przetwarza wiadomości, aby wyodrębnić wartość baterii.\r\nProcesses messages to extract the battery value."
+    },
+    {
+        "id": "ab89b34a6bc10821",
+        "type": "ui_text",
+        "z": "3e6505394cf48b86",
+        "group": "1ca5563fcbfe4fc4",
+        "order": 7,
+        "width": 3,
+        "height": 1,
+        "name": "",
+        "label": "Bateria:",
+        "format": "{{msg.payload}}",
+        "layout": "row-spread",
+        "className": "",
+        "style": false,
+        "font": "",
+        "fontSize": 16,
+        "color": "#000000",
+        "x": 840,
+        "y": 340,
+        "wires": [],
+        "info": "Wyświetla stan baterii czujnika.\r\nDisplays the battery level."
+    },
+    {
+        "id": "62fe6b0ee6dcc35c",
+        "type": "comment",
+        "z": "3e6505394cf48b86",
+        "name": "Przetwarzanie wiadomości dla MAG",
+        "info": "**Function Node 'MAG nazwa'**:\n[POL]   Przetwarza wiadomości, aby wyodrębnić nazwe czujnika.\n[ENG]   Processes messages to extract the name value from sensor.\n\n**Function Node 'MAG count'**:\n[POL]   Przetwarza wiadomości, aby wyodrębnić ilość kontaktu czujnika z magnesem.\n[ENG]   Processes messages to extract the amount of sensor contact with the magnet.\n\n**Function Node 'MAG state'**:\n[POL]   Przetwarza wiadomości, aby wyodrębnić status pola magnetycznego.\n[ENG]   Processes messages to extract the status of the magnetic field.\n\n**Function Node 'MAG rssi'**:\n[POL]   Przetwarza wiadomości, aby wyodrębnić wartość RSSI czujnika.\n[ENG]   Processes messages to extract the RSSI value from sensor.\n\n**Function Node \"MAG bateria\"**:\n[POL]   Przetwarza wiadomości, aby wyodrębnić wartość baterii\n[ENG]   Processes messages to extract the battery value.",
+        "x": 720,
+        "y": 140,
+        "wires": []
+    },
+    {
+        "id": "d18fe0ad40040ef5",
+        "type": "comment",
+        "z": "3e6505394cf48b86",
+        "name": "Elementy widoczne MAG",
+        "info": "**Text Node 'Nazwa czujnika'**:\n[POL]   Wyświetla nazwę czujnika.\n[ENG]   Displays the sensor name.\n\n**Text Node 'Stan'**:\n[POL]   Wyświetla stan ruchu czujnika.\n[ENG]   Displays the status of the magnetic field.\n\n**Text Node 'Counter'**:\n[POL]   Wyświetla ilości zmian pola magnetycznego.\n[ENG]   Displays the amount of sensor contact with the magnet.\n\n**Gauge Node 'Stan'**:\n[POL]   Wyświetla stan pola magnetycznego.\n[ENG]   Displays the status of the magnetic field.\n\n**Chart Node 'MAG'**:\n[POL]   Rysuje wykres ilości poruszeń i drgań w czasie.\n[ENG]   Draws the amount of sensor contact with the magnet.\n\n**Gauge Node 'rssi'**:\n[POL]   Wyświetla wartość RSSI jako miernik.\n[ENG]   Displays the RSSI value as a gauge.\n\n**Text Node \"Bateria\"**:\n[POL]   Wyświetla wartość baterii.\n[ENG]   Displays the battery value.",
+        "x": 990,
+        "y": 140,
+        "wires": []
+    },
+    {
+        "id": "836158ba7343a07e",
+        "type": "mqtt in",
+        "z": "3e6505394cf48b86",
+        "name": "",
+        "topic": "AMC",
+        "qos": "1",
+        "datatype": "auto-detect",
+        "broker": "a3901b1c9ba83425",
+        "nl": false,
+        "rap": true,
+        "rh": 0,
+        "inputs": 0,
+        "x": 330,
+        "y": 240,
+        "wires": [
+            [
+                "a7deeef827e9df32",
+                "5daac764c97a149c",
+                "f4dfd455a8778a43",
+                "1a722fe93b18371b",
+                "83a7af3c8f3b6bde",
+                "2f0eb7bf05128f89"
+            ]
+        ],
+        "info": "Odbiera wiadomości z tematu 'AMC' na serwerze MQTT.\nReceives messages from the topic 'AMC' on the MQTT server."
+    },
+    {
+        "id": "a7deeef827e9df32",
+        "type": "debug",
+        "z": "3e6505394cf48b86",
+        "name": "debug 63",
+        "active": false,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "payload",
+        "targetType": "msg",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 320,
+        "y": 300,
+        "wires": [],
+        "info": "Służy do debugowania wiadomości.\nUsed for debugging messages."
+    },
+    {
+        "id": "eff43f16eadc6903",
+        "type": "status",
+        "z": "3e6505394cf48b86",
+        "name": "",
+        "scope": [
+            "836158ba7343a07e"
+        ],
+        "x": 340,
+        "y": 440,
+        "wires": [
+            [
+                "3301b9a312ba46dd"
+            ]
+        ],
+        "info": "Nasłuchuje statusu 'mqtt in' node\r\nListens to the status of the 'mqtt in' node."
+    },
+    {
+        "id": "3301b9a312ba46dd",
+        "type": "function",
+        "z": "3e6505394cf48b86",
+        "name": "mqtt",
+        "func": "if(msg.status.fill === \"green\") {\n    msg.payload = 2;\n} else if (msg.status.fill === \"yellow\") {\n    msg.payload = 1;\n} else if (msg.status.fill === \"red\") {\n    msg.payload = 0;\n}\nreturn msg;\n",
+        "outputs": 1,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 630,
+        "y": 440,
+        "wires": [
+            [
+                "11f5ebe0f4b1dbe9"
+            ]
+        ],
+        "info": "Przetwarza status połączenia MQTT na cyfry przypisane do kolorów LED\r\n(connected -> 2 -> zielony, connecting -> 1 -> żółty, disconnected -> 0 -> czerwony).\r\nProcesses the MQTT connection status into numbers assigned to LED colors.\r\n(connected -> 2 -> green, connecting -> 1 -> yellow, disconnected -> 0 -> red).\r\n"
+    },
+    {
+        "id": "0dc5d009ddfdeb0a",
+        "type": "comment",
+        "z": "3e6505394cf48b86",
+        "name": "LED Node \"MQTT\"",
+        "info": "**LED Node \"dla MOV\", \"dla MAG\", \"dla T\", \"dla RHT\", \"dla ANG\"**:\n[POL]   Wskaźnik LED wyświetlający status połączenia MQTT\n        (connected -> zielony, connecting -> żółty, disconnected -> czerwony).\n[ENG]   LED indicator displaying the MQTT connection status.\n        (connected -> green, connecting -> yellow, disconnected -> red)",
+        "x": 390,
+        "y": 400,
+        "wires": []
+    },
+    {
+        "id": "11f5ebe0f4b1dbe9",
+        "type": "ui_led",
+        "z": "3e6505394cf48b86",
+        "order": 4,
+        "group": "1ca5563fcbfe4fc4",
+        "width": 3,
+        "height": 1,
+        "label": "MQTT",
+        "labelPlacement": "left",
+        "labelAlignment": "left",
+        "colorForValue": [
+            {
+                "color": "#ff0000",
+                "value": "0",
+                "valueType": "num"
+            },
+            {
+                "color": "#008000",
+                "value": "2",
+                "valueType": "num"
+            },
+            {
+                "color": "#ffff00",
+                "value": "1",
+                "valueType": "num"
+            }
+        ],
+        "allowColorForValueInMessage": false,
+        "shape": "circle",
+        "showGlow": true,
+        "name": "dla MAG",
+        "x": 840,
+        "y": 440,
+        "wires": [],
+        "info": "Wskaźnik LED wyświetlający status połączenia MQTT.\r\n(connected -> zielony, connecting -> żółty, disconnected -> czerwony)\r\nLED indicator displaying the MQTT connection status.\r\n(connected -> green, connecting -> yellow, disconnected -> red)"
+    },
+    {
+        "id": "3b63092799eb785a",
+        "type": "ui_spacer",
+        "z": "3e6505394cf48b86",
+        "name": "spacer",
+        "group": "7e7b17b88c831819",
+        "order": 5,
+        "width": 3,
+        "height": 1
+    },
+    {
+        "id": "88e567143d304376",
+        "type": "ui_spacer",
+        "z": "3e6505394cf48b86",
+        "name": "spacer",
+        "group": "7e7b17b88c831819",
+        "order": 6,
+        "width": 3,
+        "height": 1
+    },
+    {
+        "id": "1c6cc336111491f6",
+        "type": "ui_spacer",
+        "z": "3e6505394cf48b86",
+        "name": "spacer",
+        "group": "d6ff3da247dc883c",
+        "order": 2,
+        "width": 1,
+        "height": 1
+    },
+    {
+        "id": "0f0d01b46486bfb0",
+        "type": "ui_spacer",
+        "z": "3e6505394cf48b86",
+        "name": "spacer",
+        "group": "d6ff3da247dc883c",
+        "order": 6,
+        "width": 1,
+        "height": 1
+    },
+    {
+        "id": "58d03ef1f0886ae4",
+        "type": "ui_spacer",
+        "z": "3e6505394cf48b86",
+        "name": "spacer",
+        "group": "d6ff3da247dc883c",
+        "order": 8,
+        "width": 3,
+        "height": 1
+    },
+    {
+        "id": "9aa63e94831d2365",
+        "type": "ui_spacer",
+        "z": "3e6505394cf48b86",
+        "name": "spacer",
+        "group": "d6ff3da247dc883c",
+        "order": 9,
+        "width": 1,
+        "height": 1
+    },
+    {
+        "id": "e9f431df3fbfa21b",
+        "type": "ui_spacer",
+        "z": "3e6505394cf48b86",
+        "name": "spacer",
+        "group": "d6ff3da247dc883c",
+        "order": 11,
+        "width": 3,
+        "height": 1
+    },
+    {
+        "id": "e9b4460a3f4687ae",
+        "type": "ui_spacer",
+        "z": "3e6505394cf48b86",
+        "name": "spacer",
+        "group": "cf5babd6a84d2855",
+        "order": 2,
+        "width": 1,
+        "height": 1
+    },
+    {
+        "id": "40ba0745d8ebe3f6",
+        "type": "ui_spacer",
+        "z": "3e6505394cf48b86",
+        "name": "spacer",
+        "group": "cf5babd6a84d2855",
+        "order": 6,
+        "width": 1,
+        "height": 1
+    },
+    {
+        "id": "8651aa88b507acac",
+        "type": "ui_spacer",
+        "z": "3e6505394cf48b86",
+        "name": "spacer",
+        "group": "cf5babd6a84d2855",
+        "order": 7,
+        "width": 3,
+        "height": 1
+    },
+    {
+        "id": "68760ecf1d810efe",
+        "type": "ui_spacer",
+        "z": "3e6505394cf48b86",
+        "name": "spacer",
+        "group": "cf5babd6a84d2855",
+        "order": 8,
+        "width": 11,
+        "height": 1
+    },
+    {
+        "id": "baecfdc27ec8d4f1",
+        "type": "ui_spacer",
+        "z": "3e6505394cf48b86",
+        "name": "spacer",
+        "group": "cf5babd6a84d2855",
+        "order": 9,
+        "width": 3,
+        "height": 1
+    },
+    {
+        "id": "1ca5563fcbfe4fc4",
+        "type": "ui_group",
+        "name": "MAG",
+        "tab": "585e89814b62ee06",
+        "order": 1,
+        "disp": true,
+        "width": 12,
+        "collapse": false,
+        "className": ""
+    },
+    {
+        "id": "a3901b1c9ba83425",
+        "type": "mqtt-broker",
+        "name": "",
+        "broker": "10.80.6.102",
+        "port": "61883",
+        "clientid": "",
+        "autoConnect": true,
+        "usetls": false,
+        "protocolVersion": "4",
+        "keepalive": "60",
+        "cleansession": true,
+        "autoUnsubscribe": true,
+        "birthTopic": "",
+        "birthQos": "0",
+        "birthRetain": "false",
+        "birthPayload": "",
+        "birthMsg": {},
+        "closeTopic": "",
+        "closeQos": "0",
+        "closeRetain": "false",
+        "closePayload": "",
+        "closeMsg": {},
+        "willTopic": "",
+        "willQos": "0",
+        "willRetain": "false",
+        "willPayload": "",
+        "willMsg": {},
+        "userProps": "",
+        "sessionExpiry": ""
+    },
+    {
+        "id": "7e7b17b88c831819",
+        "type": "ui_group",
+        "name": "Czujnik ruchu i drgań MOV",
+        "tab": "27dfe47685640fe5",
+        "order": 2,
+        "disp": true,
+        "width": "20",
+        "collapse": false,
+        "className": ""
+    },
+    {
+        "id": "d6ff3da247dc883c",
+        "type": "ui_group",
+        "name": "Czujnik ruchu i drgań ANG",
+        "tab": "27dfe47685640fe5",
+        "order": 3,
+        "disp": true,
+        "width": 20,
+        "collapse": false,
+        "className": ""
+    },
+    {
+        "id": "cf5babd6a84d2855",
+        "type": "ui_group",
+        "name": "Czujnik temperatury",
+        "tab": "27dfe47685640fe5",
+        "order": 3,
+        "disp": true,
+        "width": 20,
+        "collapse": false,
+        "className": ""
+    },
+    {
+        "id": "585e89814b62ee06",
+        "type": "ui_tab",
+        "name": "MAG",
+        "icon": "exposure",
+        "order": 4,
+        "disabled": false,
+        "hidden": false
+    },
+    {
+        "id": "27dfe47685640fe5",
+        "type": "ui_tab",
+        "name": "Ekran główny",
+        "icon": "weekend",
+        "order": 1,
+        "disabled": false,
+        "hidden": false
+    }
+]
